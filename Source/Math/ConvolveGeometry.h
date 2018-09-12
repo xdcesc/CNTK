@@ -254,10 +254,13 @@ public:
                     dkey[i] = lim - (int)m_inputShape[i];
                 else
                     dkey[i] = 0;
-                int dk = dkey[i] + half;
-                assert(0 <= dk);
-                assert(dk < width);
-                key = key * width + dk;
+                bool isAutoPad = GetAutoPad(i);
+                int hi = isAutoPad ? 0 : (int)m_upperPad[m_upperPad.size() == 1 ? 0 : i];
+                int lo = isAutoPad ? 0 : (int)m_lowerPad[m_lowerPad.size() == 1 ? 0 : i];
+                int dk = dkey[i] + half + lo + 1;
+                assert(0 < dk);
+                assert(dk <= (width + hi + lo));
+                key = key * (width + hi + lo) + dk;
             }
             assert(cur == 0);
             assert(0 <= kern);
